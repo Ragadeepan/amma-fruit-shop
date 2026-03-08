@@ -33,11 +33,40 @@ const toList = (value, fallback) => {
     .filter(Boolean);
 };
 
+const normalizeOrigin = (value) => String(value).trim().replace(/\/+$/, "");
+
+const expandLoopbackOrigins = (origins) => {
+  const expanded = new Set(origins.map(normalizeOrigin));
+
+  origins.forEach((origin) => {
+    const normalizedOrigin = normalizeOrigin(origin);
+
+    try {
+      const parsed = new URL(normalizedOrigin);
+
+      if (parsed.hostname !== "localhost" && parsed.hostname !== "127.0.0.1") {
+        return;
+      }
+
+      const alternateOrigin = new URL(normalizedOrigin);
+      alternateOrigin.hostname =
+        parsed.hostname === "localhost" ? "127.0.0.1" : "localhost";
+      expanded.add(normalizeOrigin(alternateOrigin.toString()));
+    } catch {
+      expanded.add(normalizedOrigin);
+    }
+  });
+
+  return Array.from(expanded);
+};
+
 export const env = Object.freeze({
   nodeEnv: process.env.NODE_ENV ?? "development",
   port: toNumber(process.env.PORT, 5000),
   publicApiBaseUrl: process.env.PUBLIC_API_BASE_URL ?? "http://localhost:5000/api/v1",
-  clientOrigins: toList(process.env.CLIENT_ORIGINS, ["http://localhost:5173"]),
+  clientOrigins: expandLoopbackOrigins(
+    toList(process.env.CLIENT_ORIGINS, ["http://localhost:5173"]),
+  ),
   rateLimitWindowMs: toNumber(process.env.RATE_LIMIT_WINDOW_MS, 15 * 60 * 1000),
   rateLimitMaxRequests: toNumber(process.env.RATE_LIMIT_MAX_REQUESTS, 100),
   jwtSecret: process.env.JWT_SECRET,

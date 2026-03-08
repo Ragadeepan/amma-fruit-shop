@@ -8,8 +8,12 @@ import {
 } from "../../services/apiStatus.service.js";
 import { getWhatsAppReadiness } from "../../services/whatsappReadiness.service.js";
 
-const getServiceAvailability = () => {
-  const whatsappReadiness = getWhatsAppReadiness();
+const getServiceAvailability = async ({ forceRefresh = false } = {}) => {
+  const whatsappReadiness = await getWhatsAppReadiness({
+    verifyPublicApiBaseUrl: true,
+    verifyToken: true,
+    forceRefresh,
+  });
   const cloudinaryClient = configureCloudinary();
 
   return {
@@ -20,11 +24,13 @@ const getServiceAvailability = () => {
   };
 };
 
-export const getApiStatusHandler = asyncHandler(async (_req, res) => {
+export const getApiStatusHandler = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
     data: {
-      services: getServiceAvailability(),
+      services: await getServiceAvailability({
+        forceRefresh: req.query.refresh === "true",
+      }),
       logger: getApiStatusSnapshot(),
     },
   });

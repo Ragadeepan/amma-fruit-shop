@@ -40,6 +40,20 @@ const defaultFruitForm = {
 };
 
 const formatPrice = (value) => `Rs ${Number(value).toFixed(2)}`;
+const formatCheckStatus = (value) =>
+  value === "passed" ? "ok" : value === "failed" ? "failed" : "skipped";
+const getCheckStatusClass = (value) => {
+  if (value === "passed") {
+    return "text-emerald-400";
+  }
+
+  if (value === "failed") {
+    return "text-red-400";
+  }
+
+  return "text-muted";
+};
+
 const formatDate = (value) => {
   if (!value) {
     return "-";
@@ -636,6 +650,36 @@ export const AdminDashboardPage = () => {
               {apiStatus?.services?.cloudinary ?? "unknown"} | WhatsApp:{" "}
               {apiStatus?.services?.whatsapp ?? "unknown"}
             </p>
+            <p className="mt-2 text-xs text-muted">
+              Public API URL:{" "}
+              {apiStatus?.services?.whatsappReadiness?.publicApiBaseUrl ?? "-"}
+            </p>
+            <div className="mt-2 space-y-1 text-xs">
+              <p className={getCheckStatusClass(
+                apiStatus?.services?.whatsappReadiness?.checks?.publicApiBaseUrl?.status,
+              )}>
+                Public link check:{" "}
+                {formatCheckStatus(
+                  apiStatus?.services?.whatsappReadiness?.checks?.publicApiBaseUrl?.status,
+                )}{" "}
+                {apiStatus?.services?.whatsappReadiness?.checks?.publicApiBaseUrl?.detail
+                  ? `- ${apiStatus.services.whatsappReadiness.checks.publicApiBaseUrl.detail}`
+                  : ""}
+              </p>
+              <p
+                className={getCheckStatusClass(
+                  apiStatus?.services?.whatsappReadiness?.checks?.token?.status,
+                )}
+              >
+                Token check:{" "}
+                {formatCheckStatus(
+                  apiStatus?.services?.whatsappReadiness?.checks?.token?.status,
+                )}{" "}
+                {apiStatus?.services?.whatsappReadiness?.checks?.token?.detail
+                  ? `- ${apiStatus.services.whatsappReadiness.checks.token.detail}`
+                  : ""}
+              </p>
+            </div>
             {(apiStatus?.services?.whatsappReadiness?.issues ?? []).length > 0 ? (
               <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-amber-300">
                 {apiStatus.services.whatsappReadiness.issues.map((issue) => (

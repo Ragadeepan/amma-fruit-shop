@@ -20,6 +20,31 @@ const resolveServiceAccountPath = () => {
     : path.resolve(process.cwd(), env.firebaseServiceAccountPath);
 };
 
+const validateServiceAccountFile = (resolvedPath) => {
+  try {
+    const raw = fs.readFileSync(resolvedPath, "utf-8").trim();
+
+    if (!raw) {
+      issues.push(`FIREBASE_SERVICE_ACCOUNT_PATH is empty: ${resolvedPath}`);
+      return;
+    }
+
+    const parsed = JSON.parse(raw);
+    const requiredKeys = ["project_id", "client_email", "private_key"];
+    const missingKeys = requiredKeys.filter((key) => !parsed[key]);
+
+    if (missingKeys.length > 0) {
+      issues.push(
+        `Firebase service account JSON is missing: ${missingKeys.join(", ")}.`,
+      );
+    }
+  } catch (error) {
+    issues.push(
+      `FIREBASE_SERVICE_ACCOUNT_PATH could not be parsed: ${error.message}`,
+    );
+  }
+};
+
 if (!hasInlineCredentials && !emulatorMode) {
   const resolvedPath = resolveServiceAccountPath();
   if (!resolvedPath) {
@@ -28,6 +53,8 @@ if (!hasInlineCredentials && !emulatorMode) {
     );
   } else if (!fs.existsSync(resolvedPath)) {
     issues.push(`FIREBASE_SERVICE_ACCOUNT_PATH does not exist: ${resolvedPath}`);
+  } else {
+    validateServiceAccountFile(resolvedPath);
   }
 }
 

@@ -103,12 +103,15 @@ const sendOrderWhatsAppText = async ({ order, bodyText }) => {
 };
 
 const withReadinessGuard = async ({ sendFn, orderCode }) => {
-  const readiness = getWhatsAppReadiness();
+  const readiness = await getWhatsAppReadiness({
+    verifyPublicApiBaseUrl: true,
+  });
 
   if (!hasWhatsAppConfig() || !readiness.ready) {
     const reason =
       readiness.issues.join(" ") ||
       "WhatsApp configuration is missing or disabled.";
+    const status = hasWhatsAppConfig() ? "failed" : "not_sent";
 
     logExternalApiStatus({
       service: "whatsapp",
@@ -118,7 +121,7 @@ const withReadinessGuard = async ({ sendFn, orderCode }) => {
 
     return {
       sent: false,
-      status: "not_sent",
+      status,
       reason,
       messageId: "",
     };

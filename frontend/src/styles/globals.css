@@ -1,0 +1,136 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  --color-background: 248 247 241;
+  --color-surface: 255 255 255;
+  --color-ink: 28 31 39;
+  --color-muted: 99 108 125;
+  --color-accent: 16 137 94;
+  --color-stroke: 216 220 230;
+  --gradient-start: 255 133 61;
+  --gradient-end: 16 137 94;
+}
+
+:root[data-theme="dark"] {
+  --color-background: 13 18 24;
+  --color-surface: 24 32 41;
+  --color-ink: 238 242 248;
+  --color-muted: 149 160 178;
+  --color-accent: 26 179 126;
+  --color-stroke: 60 72 91;
+  --gradient-start: 255 173 92;
+  --gradient-end: 40 198 145;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-image: radial-gradient(
+    circle at 20% 0%,
+    rgba(255, 173, 92, 0.12),
+    transparent 38%
+  );
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-ink));
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.glass-card {
+  border: 1px solid rgb(var(--color-stroke) / 0.7);
+  background: linear-gradient(
+    135deg,
+    rgb(var(--color-surface) / 0.75),
+    rgb(var(--color-surface) / 0.4)
+  );
+  backdrop-filter: blur(10px);
+  border-radius: 1rem;
+}
+
+.gradient-btn {
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+  background-image: linear-gradient(
+    120deg,
+    rgb(var(--gradient-start)),
+    rgb(var(--gradient-end))
+  );
+}
+
+.gradient-btn:hover {
+  filter: brightness(1.05);
+}
+
+.glass-btn {
+  border: 1px solid rgb(var(--color-stroke) / 0.8);
+  border-radius: 0.75rem;
+  background: rgb(var(--color-surface) / 0.45);
+  color: rgb(var(--color-ink));
+}
+
+.glass-btn:hover {
+  background: rgb(var(--color-surface) / 0.7);
+}
+
+.floating-field {
+  position: relative;
+  display: block;
+}
+
+.floating-field input,
+.floating-field textarea,
+.floating-field select {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid rgb(var(--color-stroke));
+  background: rgb(var(--color-background) / 0.7);
+  color: rgb(var(--color-ink));
+  padding: 0.95rem 0.8rem 0.55rem;
+  outline: none;
+}
+
+.floating-field span {
+  position: absolute;
+  left: 0.75rem;
+  top: 0.75rem;
+  font-size: 0.75rem;
+  color: rgb(var(--color-muted));
+  pointer-events: none;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.floating-field input::placeholder,
+.floating-field textarea::placeholder {
+  color: transparent;
+}
+
+.floating-field input:focus,
+.floating-field textarea:focus,
+.floating-field select:focus {
+  border-color: rgb(var(--color-accent));
+}
+
+.floating-field input:focus + span,
+.floating-field input:not(:placeholder-shown) + span,
+.floating-field textarea:focus + span,
+.floating-field textarea:not(:placeholder-shown) + span,
+.floating-field select:focus + span,
+.floating-field select:not([value=""]) + span {
+  transform: translateY(-0.48rem) scale(0.9);
+  color: rgb(var(--color-accent));
+}
+
+.floating-field select + span {
+  transform: translateY(-0.48rem) scale(0.9);
+}

@@ -1,0 +1,43 @@
+{
+  "name": "amma-fruit-shop-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Amma Fruit Shop",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "check": "node --check src/server.js",
+    "firebase:check": "node scripts/firebase-readiness.js",
+    "whatsapp:check": "node scripts/whatsapp-readiness.js"
+  },
+  "keywords": [
+    "express",
+    "firebase",
+    "firestore",
+    "cloudinary",
+    "fruit-shop"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.9.0",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
+    "express-validator": "^7.3.0",
+    "firebase-admin": "^13.6.0",
+    "helmet": "^8.1.0",
+    "hpp": "^0.2.3",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.1",
+    "multer": "^2.1.0",
+    "pdfkit": "^0.17.2",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}

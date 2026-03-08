@@ -1,0 +1,7 @@
+npm error Lifecycle script `dev` failed with error:
+npm error code 4294967295
+npm error path D:\Fruit Shop\backend
+npm error workspace amma-fruit-shop-backend@1.0.0
+npm error location D:\Fruit Shop\backend
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c nodemon src/server.js

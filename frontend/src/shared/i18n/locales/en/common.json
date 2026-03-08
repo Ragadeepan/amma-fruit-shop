@@ -1,0 +1,161 @@
+{
+  "appName": "Amma Fruit Shop",
+  "layout": {
+    "tagline": "Fresh fruits, reliable quality, quick counter billing",
+    "footer": "Amma Fruit Shop - billing counter system for daily sales."
+  },
+  "controls": {
+    "language": "Language",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "nav": {
+    "home": "Home",
+    "cart": "Cart",
+    "checkout": "Checkout",
+    "admin": "Admin"
+  },
+  "home": {
+    "title": "Pick fruits and bill in minutes",
+    "description": "Search fruits, set quantity in kg, and generate invoice plus payment QR instantly.",
+    "cards": {
+      "frontendTitle": "Customer Billing",
+      "frontendBody": "Fruit grid, quantity selection, cart, checkout, invoice preview, and QR payment flow are enabled.",
+      "backendTitle": "Shop Operations",
+      "backendBody": "Stock tracking, order records, payment confirmation, analytics, and secure admin APIs are active.",
+      "nextTitle": "Live WhatsApp",
+      "nextBody": "Connect Meta Cloud API credentials to send invoice and QR directly to customer WhatsApp."
+    }
+  },
+  "homePage": {
+    "title": "Fresh Fruits Delivered Fast",
+    "description": "Select quantity in kilograms, see live pricing, and add to cart instantly.",
+    "infoTitle": "Tamil Nadu and Indian Fruits",
+    "infoParagraphOne": "Tamil Nadu is one of India's leading fruit-growing states, known for mango, banana, guava, sapota, and jackfruit. Its warm climate and long growing season support fresh, flavorful fruit supply across most months.",
+    "infoParagraphTwo": "Indian fruits vary by region and season, with tropical produce in the south, citrus and grapes in the west, and temperate fruits in northern belts. Choosing seasonal Indian fruits usually means better taste, freshness, and value.",
+    "searchLabel": "Search fruit name",
+    "allCategories": "All categories",
+    "categoryLabel": "Category",
+    "availabilityLabel": "Availability",
+    "availability": {
+      "all": "All",
+      "available": "Available",
+      "unavailable": "Unavailable"
+    },
+    "loadError": "Failed to load fruits.",
+    "unavailable": "Unavailable",
+    "pricePerKg": "Price / kg",
+    "stock": "Stock",
+    "kg": "kg",
+    "quantityLabel": "Quantity (kg)",
+    "total": "Total",
+    "addToCart": "Add to cart"
+  },
+  "cartSidebar": {
+    "title": "Cart",
+    "close": "Close",
+    "empty": "Your cart is empty.",
+    "remove": "Remove",
+    "subtotal": "Subtotal",
+    "viewCart": "View Cart",
+    "checkout": "Checkout"
+  },
+  "cartPage": {
+    "title": "Your Cart",
+    "clear": "Clear cart",
+    "emptyDescription": "Your cart is empty. Add fruits from the home page.",
+    "browse": "Browse fruits",
+    "perKg": "per kg",
+    "kg": "kg",
+    "remove": "Remove",
+    "summary": "Summary",
+    "totalWeight": "Total weight",
+    "subtotal": "Subtotal",
+    "proceed": "Proceed to checkout",
+    "paymentHint": "Choose Cash or Online in checkout."
+  },
+  "checkout": {
+    "title": "Checkout",
+    "emptyTitle": "Cart is empty",
+    "emptyDescription": "Empty cart cannot checkout. Add fruits to continue.",
+    "backHome": "Back to home",
+    "paymentMode": "Payment mode",
+    "cashBilling": "Cash Billing",
+    "onlinePayment": "Online Payment",
+    "customerName": "Customer Name",
+    "customerNameRequired": "Customer name is required.",
+    "customerNameMin": "Minimum 2 characters required.",
+    "whatsappNumber": "WhatsApp Number",
+    "whatsappRequired": "WhatsApp number is required.",
+    "whatsappInvalid": "Invalid WhatsApp number format. Use 10-digit India number or country code format.",
+    "cashHint": "After submit, invoice and thank-you message will be sent to the customer WhatsApp number.",
+    "onlineHint": "After submit, payment QR, UPI details, invoice, and thank-you message will be sent to the customer WhatsApp number.",
+    "placeOrder": "Place order",
+    "placingOrder": "Placing order...",
+    "orderSummary": "Order summary",
+    "kg": "kg",
+    "total": "Total",
+    "paymentLabel": "Payment:",
+    "emptyCartError": "Empty cart cannot checkout.",
+    "outdatedItemsError": "Some items were outdated or unavailable and removed from cart. Please review and place order again.",
+    "stockChangedError": "Stock changed for one or more fruits. Quantities were updated. Please place order again.",
+    "noValidItemsError": "Cart has no valid items. Please add fruits and retry.",
+    "invalidCartDataError": "Cart has invalid item data. Please clear cart and add fruits again.",
+    "oldCartError": "Cart contains old fruit items from a previous session. Please re-add fruits and place order again.",
+    "placeOrderError": "Failed to place order. Please retry."
+  },
+  "success": {
+    "title": "Order Confirmed",
+    "description": "Thank you for ordering from Amma Fruit Shop. Your order has been placed successfully.",
+    "orderId": "Order ID",
+    "paymentType": "Payment type",
+    "whatsappNumber": "WhatsApp Number",
+    "paymentStatus": "Payment status",
+    "whatsappAutomation": "WhatsApp automation",
+    "totalAmount": "Total amount",
+    "onlineSelected": "Online Payment Selected",
+    "onlinePendingNote": "Payment remains pending until confirmed by Amma Fruit Shop.",
+    "openUpiApp": "Open UPI App",
+    "cashSelected": "Cash Billing Selected",
+    "cashNote": "Invoice and thank-you message are sent to the customer WhatsApp number.",
+    "continueShopping": "Continue Shopping",
+    "viewCart": "View Cart",
+    "refreshPayment": "Refresh Payment",
+    "refreshing": "Refreshing...",
+    "invoicePreview": "Invoice Preview",
+    "loading": "Loading...",
+    "refreshError": "Failed to refresh payment status.",
+    "invoicePreviewError": "Failed to load invoice preview.",
+    "downloadError": "Failed to download invoice PDF."
+  },
+  "adminLogin": {
+    "title": "Admin Login",
+    "subtitle": "Manage fruits, orders, and analytics",
+    "email": "Email",
+    "emailRequired": "Email is required.",
+    "emailInvalid": "Invalid email format.",
+    "password": "Password",
+    "passwordRequired": "Password is required.",
+    "passwordMin": "Minimum 6 characters required.",
+    "signIn": "Sign In",
+    "signingIn": "Signing in..."
+  },
+  "invoiceModal": {
+    "title": "Invoice Preview",
+    "close": "Close",
+    "customer": "Customer:",
+    "whatsapp": "WhatsApp:",
+    "payment": "Payment:",
+    "status": "Status:",
+    "items": "Items",
+    "total": "Total",
+    "preparing": "Preparing PDF...",
+    "download": "Download Invoice PDF"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The route you requested does not exist yet.",
+    "action": "Go to home"
+  }
+}

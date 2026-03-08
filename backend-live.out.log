@@ -1,0 +1,13 @@
+
+> amma-fruit-shop-backend@1.0.0 dev
+> nodemon src/server.js
+
+[33m[nodemon] 3.1.14[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: js,mjs,cjs,json[39m
+[32m[nodemon] starting `node src/server.js`[39m
+[dotenv@17.3.1] injecting env (30) from .env,.env,..\.env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+Connected to Firebase Firestore.
+Server listening on port 5000
+2570dc08-594e-4ae5-88e8-c29f0927b2f5 GET /api/v1/fruits 200 513.247 ms

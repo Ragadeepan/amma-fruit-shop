@@ -10,20 +10,13 @@ npm run dev
 
 Backend must stay on `http://localhost:5000`.
 
-## 2. Create Public HTTPS URL for Backend
+## 2. Use the Production API URL
 
-WhatsApp cannot access localhost links, so expose backend publicly.
+WhatsApp cannot access localhost links, so use the production Render API URL.
 
-Option A: Cloudflare Tunnel
+Production backend:
 
-```bash
-winget install Cloudflare.cloudflared
-cloudflared tunnel --url http://localhost:5000
-```
-
-Copy the generated URL:
-
-`https://<random>.trycloudflare.com`
+`https://amma-fruit-shop-api.onrender.com`
 
 ## 3. Get Meta WhatsApp Cloud API Credentials
 
@@ -42,7 +35,8 @@ Set these values in root `.env`:
 WHATSAPP_ENABLED=true
 WHATSAPP_PHONE_NUMBER_ID=your_phone_number_id
 WHATSAPP_ACCESS_TOKEN=your_access_token
-PUBLIC_API_BASE_URL=https://<your-public-domain>/api/v1
+PUBLIC_API_BASE_URL=https://amma-fruit-shop-api.onrender.com
+VITE_API_BASE_URL=https://amma-fruit-shop-api.onrender.com
 ```
 
 ## 5. Validate Readiness
@@ -81,6 +75,6 @@ If everything is correct, output shows:
 - `WHATSAPP_ACCESS_TOKEN is missing`:
   token not set in `.env`.
 - `PUBLIC_API_BASE_URL must use https://`:
-  use HTTPS tunnel URL.
+  use the HTTPS Render URL.
 - `PUBLIC_API_BASE_URL cannot use localhost`:
-  replace localhost with public tunnel/domain.
+  replace localhost with `https://amma-fruit-shop-api.onrender.com`.

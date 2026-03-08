@@ -35,6 +35,27 @@ const toList = (value, fallback) => {
 
 const normalizeOrigin = (value) => String(value).trim().replace(/\/+$/, "");
 
+const normalizeApiBaseUrl = (value, fallback) => {
+  const rawValue = String(value ?? "").trim() || fallback;
+
+  try {
+    const parsed = new URL(rawValue);
+    const pathname = parsed.pathname.replace(/\/+$/, "");
+
+    if (!pathname || pathname === "/") {
+      parsed.pathname = "/api/v1";
+    } else if (pathname === "/api") {
+      parsed.pathname = "/api/v1";
+    } else {
+      parsed.pathname = pathname;
+    }
+
+    return parsed.toString().replace(/\/+$/, "");
+  } catch {
+    return rawValue.replace(/\/+$/, "");
+  }
+};
+
 const expandLoopbackOrigins = (origins) => {
   const expanded = new Set(origins.map(normalizeOrigin));
 
@@ -63,7 +84,10 @@ const expandLoopbackOrigins = (origins) => {
 export const env = Object.freeze({
   nodeEnv: process.env.NODE_ENV ?? "development",
   port: toNumber(process.env.PORT, 5000),
-  publicApiBaseUrl: process.env.PUBLIC_API_BASE_URL ?? "http://localhost:5000/api/v1",
+  publicApiBaseUrl: normalizeApiBaseUrl(
+    process.env.PUBLIC_API_BASE_URL,
+    "http://localhost:5000/api/v1",
+  ),
   clientOrigins: expandLoopbackOrigins(
     toList(process.env.CLIENT_ORIGINS, ["http://localhost:5173"]),
   ),

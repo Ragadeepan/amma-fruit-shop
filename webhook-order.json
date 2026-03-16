@@ -1,0 +1,62 @@
+{
+    "success":  true,
+    "message":  "Automation order placed successfully.",
+    "data":  {
+                 "_id":  "BLr7MGbuxwS7O2FrOT0v",
+                 "orderCode":  "AFS-20260309-800454",
+                 "customerName":  "Webhook Test",
+                 "whatsappNumber":  "919999999997",
+                 "paymentType":  "online",
+                 "items":  [
+                               {
+                                   "fruitId":  "V8LquNqjr6EtWGFWcA3k",
+                                   "fruitName":  "Nagpur Orange",
+                                   "fruitImageUrl":  "https://images.unsplash.com/photo-1587735243615-c03f25aaff15?auto=format\u0026fit=crop\u0026w=1200\u0026q=80",
+                                   "quantityKg":  2.5,
+                                   "pricePerKg":  110,
+                                   "lineTotal":  275
+                               },
+                               {
+                                   "fruitId":  "nlDboJ4dDNWwZOlRJTrv",
+                                   "fruitName":  "Washington Apple",
+                                   "fruitImageUrl":  "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?auto=format\u0026fit=crop\u0026w=1200\u0026q=80",
+                                   "quantityKg":  1.25,
+                                   "pricePerKg":  180,
+                                   "lineTotal":  225
+                               }
+                           ],
+                 "totalAmount":  500,
+                 "payment":  {
+                                 "status":  "pending",
+                                 "confirmedAt":  null,
+                                 "confirmationReference":  "",
+                                 "confirmedBy":  "",
+                                 "failureReason":  "",
+                                 "upiIntent":  "upi://pay?pa=ammafruitshop%40upi\u0026pn=Amma+Fruit+Shop\u0026am=500.00\u0026cu=INR\u0026tn=Order+AFS-20260309-800454",
+                                 "whatsappMessageId":  "",
+                                 "whatsappStatus":  "failed",
+                                 "whatsappError":  "WhatsApp access token expired. Generate a new token in Meta and restart the backend.",
+                                 "whatsappTransport":  "text",
+                                 "whatsappConversationId":  "",
+                                 "whatsappPricingCategory":  "",
+                                 "whatsappSentAt":  null,
+                                 "whatsappDeliveredAt":  null,
+                                 "whatsappReadAt":  null,
+                                 "whatsappFailedAt":  "2026-03-09T07:13:51.329Z",
+                                 "whatsappLastWebhookAt":  null
+                             },
+                 "status":  "placed",
+                 "orderFingerprint":  "c30acb1d6b11af585b21a1b10e7c61da01e413ca90456c1b2d3035b46418cccb",
+                 "createdAt":  "2026-03-09T07:13:50.617Z",
+                 "updatedAt":  "2026-03-09T07:13:50.617Z",
+                 "qrImageUrl":  "https://amma-fruit-shop-api.onrender.com/api/v1/orders/BLr7MGbuxwS7O2FrOT0v/payment-qr.png?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmRlcklkIjoiQkxyN01HYnV4d1M3TzJGck9UMHYiLCJ3aGF0c2FwcE51bWJlciI6IjkxOTk5OTk5OTk5NyIsImlhdCI6MTc3MzA0MDQzMCwiZXhwIjoxNzczMjEzMjMwfQ.OTbu-N0KFdKlcCl-_AbcSBS-hUJUiLNF2WCQyFy15mI",
+                 "invoiceUrl":  "https://amma-fruit-shop-api.onrender.com/api/v1/orders/BLr7MGbuxwS7O2FrOT0v/invoice.pdf?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmRlcklkIjoiQkxyN01HYnV4d1M3TzJGck9UMHYiLCJ3aGF0c2FwcE51bWJlciI6IjkxOTk5OTk5OTk5NyIsImlhdCI6MTc3MzA0MDQzMCwiZXhwIjoxNzczMjEzMjMwfQ.OTbu-N0KFdKlcCl-_AbcSBS-hUJUiLNF2WCQyFy15mI",
+                 "orderAccessToken":  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmRlcklkIjoiQkxyN01HYnV4d1M3TzJGck9UMHYiLCJ3aGF0c2FwcE51bWJlciI6IjkxOTk5OTk5OTk5NyIsImlhdCI6MTc3MzA0MDQzMCwiZXhwIjoxNzczMjEzMjMwfQ.OTbu-N0KFdKlcCl-_AbcSBS-hUJUiLNF2WCQyFy15mI",
+                 "automation":  {
+                                    "requestedTotal":  500,
+                                    "resolvedTotal":  500,
+                                    "exactMatch":  true,
+                                    "warning":  ""
+                                }
+             }
+}

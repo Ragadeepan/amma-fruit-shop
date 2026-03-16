@@ -13,6 +13,7 @@ const parseUrl = (value) => {
 };
 
 const cloneResult = (value) => JSON.parse(JSON.stringify(value));
+const supportedMessageModes = new Set(["text", "template"]);
 
 const isLocalHost = (hostname) =>
   hostname === "localhost" ||
@@ -31,6 +32,15 @@ const getSkippedCheckResult = (detail) => ({
   detail,
   checkedAt: null,
 });
+
+const recomputeReadiness = (value) => {
+  value.issues = [...value.sendIssues, ...value.webhookIssues];
+  value.sendReady = value.sendIssues.length === 0;
+  value.webhookReady = value.webhookIssues.length === 0;
+  value.ready = value.sendReady && value.webhookReady;
+
+  return value;
+};
 
 const fetchWithTimeout = async (url, options = {}, timeoutMs = READINESS_TIMEOUT_MS) => {
   const controller = new AbortController();
@@ -92,42 +102,74 @@ const verifyPublicApiBaseUrl = async () => {
   return `Public API health check passed at ${healthUrl}.`;
 };
 
+const buildExpectedWebhookUrl = () =>
+  `${env.publicApiBaseUrl.replace(/\/$/, "")}/whatsapp/webhook`;
+
 export const getStaticWhatsAppReadiness = () => {
-  const issues = [];
+  const sendIssues = [];
+  const webhookIssues = [];
+
+  if (!supportedMessageModes.has(env.whatsappMessageMode)) {
+    sendIssues.push("WHATSAPP_MESSAGE_MODE must be either text or template.");
+  }
 
   if (!env.whatsappEnabled) {
-    issues.push("WHATSAPP_ENABLED must be true.");
+    sendIssues.push("WHATSAPP_ENABLED must be true.");
   }
 
   if (!env.whatsappPhoneNumberId) {
-    issues.push("WHATSAPP_PHONE_NUMBER_ID is missing.");
+    sendIssues.push("WHATSAPP_PHONE_NUMBER_ID is missing.");
   }
 
   if (!env.whatsappAccessToken) {
-    issues.push("WHATSAPP_ACCESS_TOKEN is missing.");
+    sendIssues.push("WHATSAPP_ACCESS_TOKEN is missing.");
+  }
+
+  if (!env.whatsappWebhookVerifyToken) {
+    webhookIssues.push("WHATSAPP_WEBHOOK_VERIFY_TOKEN is missing.");
+  }
+
+  if (!env.whatsappAppSecret) {
+    webhookIssues.push("WHATSAPP_APP_SECRET is missing.");
+  }
+
+  if (env.whatsappMessageMode === "template") {
+    if (!env.whatsappTemplateOnlineOrderName) {
+      sendIssues.push("WHATSAPP_TEMPLATE_ONLINE_ORDER_NAME is missing.");
+    }
+
+    if (!env.whatsappTemplateCashOrderName) {
+      sendIssues.push("WHATSAPP_TEMPLATE_CASH_ORDER_NAME is missing.");
+    }
   }
 
   const publicApiUrl = parseUrl(env.publicApiBaseUrl);
 
   if (!publicApiUrl) {
-    issues.push("PUBLIC_API_BASE_URL is not a valid URL.");
+    sendIssues.push("PUBLIC_API_BASE_URL is not a valid URL.");
   } else {
     if (publicApiUrl.protocol !== "https:") {
-      issues.push("PUBLIC_API_BASE_URL must use https://");
+      sendIssues.push("PUBLIC_API_BASE_URL must use https://");
     }
 
     if (isLocalHost(publicApiUrl.hostname)) {
-      issues.push(
+      sendIssues.push(
         "PUBLIC_API_BASE_URL must be publicly reachable and cannot use localhost/127.0.0.1.",
       );
     }
   }
 
-  return {
-    ready: issues.length === 0,
-    issues,
+  return recomputeReadiness({
     publicApiBaseUrl: env.publicApiBaseUrl,
-  };
+    messageMode: env.whatsappMessageMode,
+    sendIssues,
+    webhookIssues,
+    expectedWebhookUrl: buildExpectedWebhookUrl(),
+    templateNames: {
+      online: env.whatsappTemplateOnlineOrderName,
+      cash: env.whatsappTemplateCashOrderName,
+    },
+  });
 };
 
 export const getWhatsAppReadiness = async (options = {}) => {
@@ -163,10 +205,13 @@ export const getWhatsAppReadiness = async (options = {}) => {
             "Skipped until base WhatsApp configuration issues are fixed.",
           )
         : getSkippedCheckResult("Token verification was not requested."),
+      webhook: getSkippedCheckResult(
+        `Configure Meta webhook callback URL as ${buildExpectedWebhookUrl()}.`,
+      ),
     },
   };
 
-  if (baseReadiness.ready && settings.verifyPublicApiBaseUrl) {
+  if (baseReadiness.sendReady && settings.verifyPublicApiBaseUrl) {
     try {
       result.checks.publicApiBaseUrl = createCheckResult(
         "passed",
@@ -176,22 +221,22 @@ export const getWhatsAppReadiness = async (options = {}) => {
       const detail =
         error?.cause?.message || error?.message || "Public API verification failed.";
       result.checks.publicApiBaseUrl = createCheckResult("failed", detail);
-      result.issues.push(detail);
+      result.sendIssues.push(detail);
     }
   }
 
-  if (baseReadiness.ready && settings.verifyToken) {
+  if (baseReadiness.sendReady && settings.verifyToken) {
     try {
       result.checks.token = createCheckResult("passed", await verifyWhatsAppToken());
     } catch (error) {
       const detail =
         error?.cause?.message || error?.message || "WhatsApp token verification failed.";
       result.checks.token = createCheckResult("failed", detail);
-      result.issues.push(detail);
+      result.sendIssues.push(detail);
     }
   }
 
-  result.ready = result.issues.length === 0;
+  recomputeReadiness(result);
 
   readinessCache.set(cacheKey, {
     expiresAt: now + READINESS_CACHE_TTL_MS,

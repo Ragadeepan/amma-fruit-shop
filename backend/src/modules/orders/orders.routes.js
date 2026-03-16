@@ -3,6 +3,7 @@ import { requireAdminAuth } from "../../middlewares/auth.middleware.js";
 import { validate } from "../../utils/validator.js";
 import {
   confirmPaymentHandler,
+  createAutomationOrderHandler,
   createOrderHandler,
   downloadOrderInvoiceHandler,
   getCustomerOrderStatusHandler,
@@ -14,6 +15,7 @@ import {
 } from "./orders.controller.js";
 import {
   confirmPaymentValidation,
+  createAutomationOrderValidation,
   createOrderValidation,
   listOrdersValidation,
   orderAccessTokenValidation,
@@ -23,6 +25,7 @@ import {
 
 const router = Router();
 
+router.post("/create", validate(createAutomationOrderValidation), createAutomationOrderHandler);
 router.post("/", validate(createOrderValidation), createOrderHandler);
 router.get("/:orderId/status", validate(orderAccessTokenValidation), getCustomerOrderStatusHandler);
 router.get("/:orderId/invoice-preview", validate(orderAccessTokenValidation), getOrderInvoicePreviewHandler);

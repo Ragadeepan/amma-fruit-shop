@@ -25,6 +25,7 @@ import {
 } from "../../utils/orderAccessToken.js";
 
 const toFixedNumber = (value) => Number(Number(value).toFixed(2));
+const AUTOMATION_QUANTITY_STEP_KG = 0.25;
 
 const normalizePhone = (phone = "") => {
   const raw = String(phone).trim();
@@ -140,6 +141,131 @@ const serializeOrder = ({ order, orderAccessToken }) => {
 const getOrderCollection = () => collectionRef(collections.orders);
 const getFruitRef = (fruitId) => docRef(collections.fruits, fruitId);
 const getOrderRef = (orderId) => docRef(collections.orders, orderId);
+
+const normalizeAutomationTotal = (value) => {
+  const parsed = Number(value);
+
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    throw new AppError(422, "Total must be a positive number.");
+  }
+
+  return toFixedNumber(parsed);
+};
+
+const loadAvailableFruitsForAutomation = async () => {
+  const snapshot = await collectionRef(collections.fruits).get();
+
+  return mapDocs(snapshot)
+    .filter(
+      (fruit) =>
+        fruit &&
+        fruit.isAvailable === true &&
+        Number(fruit.pricePerKg) > 0 &&
+        Number(fruit.stockKg) >= AUTOMATION_QUANTITY_STEP_KG,
+    )
+    .sort((left, right) => Number(left.pricePerKg) - Number(right.pricePerKg));
+};
+
+const buildAutomationCartPlan = ({ fruits, requestedTotal }) => {
+  const scaledTarget = Math.round(normalizeAutomationTotal(requestedTotal) * 4);
+  const candidates = fruits.map((fruit) => ({
+    fruitId: fruit._id,
+    fruitName: fruit.name,
+    pricePerKg: Number(fruit.pricePerKg),
+    maxUnits: Math.floor(Number(fruit.stockKg) / AUTOMATION_QUANTITY_STEP_KG),
+    stepCost: Number(fruit.pricePerKg),
+  }));
+
+  if (candidates.length === 0) {
+    throw new AppError(400, "No available fruits found for automation order.");
+  }
+
+  const dp = Array.from({ length: scaledTarget + 1 }, () => null);
+  dp[0] = { prevAmount: null, fruitIndex: null, count: 0 };
+
+  candidates.forEach((fruit, fruitIndex) => {
+    for (let amount = scaledTarget; amount >= 0; amount -= 1) {
+      if (!dp[amount]) {
+        continue;
+      }
+
+      for (let count = 1; count <= fruit.maxUnits; count += 1) {
+        const nextAmount = amount + count * fruit.stepCost;
+        if (nextAmount > scaledTarget) {
+          break;
+        }
+
+        if (!dp[nextAmount]) {
+          dp[nextAmount] = {
+            prevAmount: amount,
+            fruitIndex,
+            count,
+          };
+        }
+      }
+    }
+  });
+
+  let matchedAmount = scaledTarget;
+  while (matchedAmount > 0 && !dp[matchedAmount]) {
+    matchedAmount -= 1;
+  }
+
+  if (matchedAmount === 0) {
+    const cheapestFruit = candidates[0];
+
+    return {
+      exactMatch: false,
+      requestedTotal: toFixedNumber(scaledTarget / 4),
+      actualTotal: toFixedNumber(cheapestFruit.stepCost / 4),
+      warning:
+        "Requested total is below the minimum achievable cart value. Used the cheapest 0.25kg fruit instead.",
+      items: [
+        {
+          fruitId: cheapestFruit.fruitId,
+          quantityKg: AUTOMATION_QUANTITY_STEP_KG,
+        },
+      ],
+    };
+  }
+
+  const unitCounts = Array.from({ length: candidates.length }, () => 0);
+  let currentAmount = matchedAmount;
+
+  while (currentAmount > 0) {
+    const node = dp[currentAmount];
+
+    if (!node) {
+      throw new AppError(500, "Failed to reconstruct automation order cart.");
+    }
+
+    unitCounts[node.fruitIndex] += node.count;
+    currentAmount = node.prevAmount;
+  }
+
+  const items = [];
+  unitCounts.forEach((unitCount, index) => {
+    if (unitCount === 0) {
+      return;
+    }
+
+    items.push({
+      fruitId: candidates[index].fruitId,
+      quantityKg: toFixedNumber(unitCount * AUTOMATION_QUANTITY_STEP_KG),
+    });
+  });
+
+  return {
+    exactMatch: matchedAmount === scaledTarget,
+    requestedTotal: toFixedNumber(scaledTarget / 4),
+    actualTotal: toFixedNumber(matchedAmount / 4),
+    warning:
+      matchedAmount === scaledTarget
+        ? ""
+        : "Requested total could not be matched exactly with live fruit prices. Used the closest lower cart total.",
+    items,
+  };
+};
 
 export const createOrder = async (payload) => {
   const whatsappNumber = normalizePhone(
@@ -267,6 +393,14 @@ export const createOrder = async (payload) => {
         whatsappMessageId: "",
         whatsappStatus: "not_sent",
         whatsappError: "",
+        whatsappTransport: env.whatsappMessageMode,
+        whatsappConversationId: "",
+        whatsappPricingCategory: "",
+        whatsappSentAt: null,
+        whatsappDeliveredAt: null,
+        whatsappReadAt: null,
+        whatsappFailedAt: null,
+        whatsappLastWebhookAt: null,
       },
       status: "placed",
       orderFingerprint,
@@ -318,19 +452,58 @@ export const createOrder = async (payload) => {
   const whatsappStatus =
     whatsappResult.status ?? (whatsappResult.sent ? "sent" : "failed");
   const whatsappError = whatsappResult.reason ?? "";
+  const whatsappSentAt = whatsappResult.acceptedAt ?? null;
+  const whatsappFailedAt =
+    whatsappStatus === "failed" ? new Date() : null;
 
   await getOrderRef(order._id).update({
     "payment.whatsappStatus": whatsappStatus,
     "payment.whatsappMessageId": whatsappResult.messageId,
     "payment.whatsappError": whatsappError,
+    "payment.whatsappTransport":
+      whatsappResult.transport ?? env.whatsappMessageMode,
+    "payment.whatsappSentAt": whatsappSentAt,
+    "payment.whatsappFailedAt": whatsappFailedAt,
     updatedAt: new Date(),
   });
 
   order.payment.whatsappStatus = whatsappStatus;
   order.payment.whatsappMessageId = whatsappResult.messageId;
   order.payment.whatsappError = whatsappError;
+  order.payment.whatsappTransport =
+    whatsappResult.transport ?? env.whatsappMessageMode;
+  order.payment.whatsappSentAt = whatsappSentAt;
+  order.payment.whatsappFailedAt = whatsappFailedAt;
 
   return serializeOrder({ order, orderAccessToken });
+};
+
+export const createAutomationOrder = async ({
+  customerName,
+  customerPhone,
+  total,
+}) => {
+  const automationPlan = buildAutomationCartPlan({
+    fruits: await loadAvailableFruitsForAutomation(),
+    requestedTotal: total,
+  });
+
+  const order = await createOrder({
+    customerName,
+    phone: customerPhone,
+    paymentType: "online",
+    items: automationPlan.items,
+  });
+
+  return {
+    ...order,
+    automation: {
+      requestedTotal: automationPlan.requestedTotal,
+      resolvedTotal: automationPlan.actualTotal,
+      exactMatch: automationPlan.exactMatch,
+      warning: automationPlan.warning,
+    },
+  };
 };
 
 export const listOrders = async (query) => {

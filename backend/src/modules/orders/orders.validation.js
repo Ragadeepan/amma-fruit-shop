@@ -50,6 +50,21 @@ export const createOrderValidation = [
     .withMessage("Quantity must be between 0.25 and 200 kg."),
 ];
 
+export const createAutomationOrderValidation = [
+  body("customerName")
+    .trim()
+    .isLength({ min: 2, max: 80 })
+    .withMessage("Customer name must be between 2 and 80 characters."),
+  body("customerPhone")
+    .customSanitizer((value) => normalizePhone(value))
+    .matches(phoneRegex)
+    .withMessage("Customer phone must be a valid WhatsApp number."),
+  body("total")
+    .customSanitizer((value) => Number.parseFloat(value))
+    .isFloat({ min: 1, max: 100000 })
+    .withMessage("Total must be between 1 and 100000."),
+];
+
 export const listOrdersValidation = [
   query("page").optional().isInt({ min: 1 }),
   query("limit").optional().isInt({ min: 1, max: 100 }),

@@ -1,6 +1,7 @@
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import {
   confirmOrderPayment,
+  createAutomationOrder,
   createOrder,
   getOrderByIdForAdmin,
   getOrderForCustomer,
@@ -20,6 +21,16 @@ export const createOrderHandler = asyncHandler(async (req, res) => {
     success: true,
     message: "Order placed successfully.",
     data: order,
+  });
+});
+
+export const createAutomationOrderHandler = asyncHandler(async (req, res) => {
+  const result = await createAutomationOrder(req.body);
+
+  res.status(201).json({
+    success: true,
+    message: "Automation order placed successfully.",
+    data: result,
   });
 });
 

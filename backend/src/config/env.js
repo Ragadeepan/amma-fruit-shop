@@ -33,6 +33,19 @@ const toList = (value, fallback) => {
     .filter(Boolean);
 };
 
+const toBoolean = (value, fallback = false) => {
+  if (value === undefined || value === null || value === "") {
+    return fallback;
+  }
+
+  return String(value).trim().toLowerCase() === "true";
+};
+
+const toLowerCaseString = (value, fallback = "") => {
+  const normalized = String(value ?? "").trim().toLowerCase();
+  return normalized || fallback;
+};
+
 const normalizeOrigin = (value) => String(value).trim().replace(/\/+$/, "");
 
 const normalizeApiBaseUrl = (value, fallback) => {
@@ -102,11 +115,24 @@ export const env = Object.freeze({
   duplicateWindowMinutes: toNumber(process.env.DUPLICATE_WINDOW_MINUTES, 10),
   upiId: process.env.UPI_ID ?? "ammafruitshop@upi",
   upiPayeeName: process.env.UPI_PAYEE_NAME ?? "Amma Fruit Shop",
-  whatsappEnabled: process.env.WHATSAPP_ENABLED === "true",
+  whatsappEnabled: toBoolean(process.env.WHATSAPP_ENABLED, false),
   whatsappApiVersion: process.env.WHATSAPP_API_VERSION ?? "v20.0",
+  whatsappMessageMode: toLowerCaseString(
+    process.env.WHATSAPP_MESSAGE_MODE,
+    "text",
+  ),
   whatsappPhoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID,
   whatsappAccessToken: process.env.WHATSAPP_ACCESS_TOKEN,
   whatsappRecipientOverride: process.env.WHATSAPP_RECIPIENT_OVERRIDE,
+  whatsappTemplateLanguageCode:
+    process.env.WHATSAPP_TEMPLATE_LANGUAGE_CODE ?? "en_US",
+  whatsappTemplateOnlineOrderName:
+    process.env.WHATSAPP_TEMPLATE_ONLINE_ORDER_NAME ?? "",
+  whatsappTemplateCashOrderName:
+    process.env.WHATSAPP_TEMPLATE_CASH_ORDER_NAME ?? "",
+  whatsappWebhookVerifyToken:
+    process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN ?? "",
+  whatsappAppSecret: process.env.WHATSAPP_APP_SECRET ?? "",
   cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME,
   cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
   cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET,

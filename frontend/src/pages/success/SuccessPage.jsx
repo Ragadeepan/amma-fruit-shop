@@ -3,11 +3,14 @@ import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router-dom";
 import { InvoiceModal } from "../../features/orders/ui/InvoiceModal.jsx";
 import { ordersApi } from "../../shared/api/modules/ordersApi.js";
+import { env } from "../../shared/config/env.js";
 import { routes } from "../../shared/constants/routes.js";
 import { storageKeys } from "../../shared/constants/storageKeys.js";
 import { formatWhatsAppError } from "../../shared/utils/whatsappErrors.js";
 
 const formatPrice = (value) => `Rs ${Number(value).toFixed(2)}`;
+const isWhatsAppHealthyStatus = (value) =>
+  ["sent", "delivered", "read"].includes(String(value ?? "").toLowerCase());
 
 export const SuccessPage = () => {
   const { t } = useTranslation();
@@ -56,6 +59,16 @@ export const SuccessPage = () => {
 
     return order.payment.upiIntent;
   }, [order?.payment?.upiIntent]);
+
+  const qrImageUrl = useMemo(() => {
+    if (!order?._id || !accessToken || !env.apiBaseUrl) {
+      return order?.qrImageUrl ?? "";
+    }
+
+    const orderId = encodeURIComponent(order._id);
+    const token = encodeURIComponent(accessToken);
+    return `${env.apiBaseUrl}/orders/${orderId}/payment-qr.png?token=${token}`;
+  }, [accessToken, order?._id, order?.qrImageUrl]);
 
   const refreshPaymentStatus = async () => {
     if (!order?._id || !accessToken) {
@@ -156,7 +169,7 @@ export const SuccessPage = () => {
           <p className="mt-3 text-sm text-muted">{t("success.whatsappAutomation")}</p>
           <p
             className={`font-medium capitalize ${
-              whatsappStatus === "sent"
+              isWhatsAppHealthyStatus(whatsappStatus)
                 ? "text-emerald-400"
                 : whatsappStatus === "failed"
                   ? "text-red-400"
@@ -182,11 +195,11 @@ export const SuccessPage = () => {
               <p className="mt-1 text-xs text-muted">
                 {t("success.onlinePendingNote")}
               </p>
-              {order.qrImageUrl ? (
+              {qrImageUrl ? (
                 <img
                   alt="UPI QR"
                   className="mt-3 h-48 w-48 rounded-lg border border-stroke bg-white p-2"
-                  src={order.qrImageUrl}
+                  src={qrImageUrl}
                 />
               ) : null}
               {upiLink ? (

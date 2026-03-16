@@ -6,6 +6,7 @@ const apiRateLimiter = rateLimit({
   max: env.rateLimitMaxRequests,
   standardHeaders: "draft-8",
   legacyHeaders: false,
+  skip: (req) => req.originalUrl.includes("/whatsapp/webhook"),
   message: {
     success: false,
     message: "Too many requests. Please try again later.",

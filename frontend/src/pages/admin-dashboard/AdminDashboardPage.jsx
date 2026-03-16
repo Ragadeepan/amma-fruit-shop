@@ -40,6 +40,8 @@ const defaultFruitForm = {
 };
 
 const formatPrice = (value) => `Rs ${Number(value).toFixed(2)}`;
+const isWhatsAppHealthyStatus = (value) =>
+  ["sent", "delivered", "read"].includes(String(value ?? "").toLowerCase());
 const formatCheckStatus = (value) =>
   value === "passed" ? "ok" : value === "failed" ? "failed" : "skipped";
 const getCheckStatusClass = (value) => {
@@ -1136,7 +1138,17 @@ export const AdminDashboardPage = () => {
                       ) : null}
                     </td>
                     <td className="px-2 py-2">
-                      <p className="capitalize">{order.payment?.whatsappStatus ?? "not_sent"}</p>
+                      <p
+                        className={`capitalize ${
+                          isWhatsAppHealthyStatus(order.payment?.whatsappStatus)
+                            ? "text-emerald-400"
+                            : order.payment?.whatsappStatus === "failed"
+                              ? "text-red-400"
+                              : "text-amber-300"
+                        }`}
+                      >
+                        {order.payment?.whatsappStatus ?? "not_sent"}
+                      </p>
                       {order.payment?.whatsappStatus === "failed" &&
                       order.payment?.whatsappError ? (
                         <p

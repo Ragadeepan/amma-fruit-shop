@@ -13,5 +13,23 @@ export const formatWhatsAppError = (message = "") => {
     return "WhatsApp access token expired. Generate a new token in Meta and restart the backend.";
   }
 
+  if (
+    lowerMessage.includes("template name") &&
+    lowerMessage.includes("does not exist")
+  ) {
+    return "Configured WhatsApp template name does not exist or is not approved.";
+  }
+
+  if (
+    lowerMessage.includes("template") &&
+    lowerMessage.includes("parameter")
+  ) {
+    return "WhatsApp template variables do not match the approved template.";
+  }
+
+  if (lowerMessage.includes("webhook verify token")) {
+    return "WhatsApp webhook verify token is invalid or missing.";
+  }
+
   return normalizedMessage;
 };

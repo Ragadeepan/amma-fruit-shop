@@ -1,4 +1,11 @@
-const isDangerousKey = (key) => key.startsWith("$") || key.includes(".");
+const SAFE_QUERY_KEYS = new Set([
+  "hub.mode",
+  "hub.verify_token",
+  "hub.challenge",
+]);
+
+const isDangerousKey = (key) =>
+  !SAFE_QUERY_KEYS.has(key) && (key.startsWith("$") || key.includes("."));
 
 const sanitizeValue = (value) => {
   if (!value || typeof value !== "object") {
